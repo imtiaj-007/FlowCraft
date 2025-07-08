@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chatbot Flow Builder
+
+A modern drag-and-drop chatbot flow builder built with:
+- Next.js 15
+- TypeScript
+- ShadCN UI components
+- Tailwind CSS
+- Lucide icons
+- React Flow
+
+## Features
+- Visual flow builder with drag-and-drop nodes
+- Custom node types for different chatbot interactions
+- Real-time flow validation
+- Responsive UI with dark/light mode support
+- State management with Zustand
+
+## Tech Stack
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS + ShadCN UI components
+- **Flow Builder**: React Flow
+- **Icons**: Lucide
+- **State Management**: Zustand
+- **Form Validation**: Custom validation library
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
+Then, run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
+Key directories:
+- `src/app`: Next.js app router pages
+- `src/components/flow-builder`: Flow builder components
+  - `nodes/`: Custom node components
+  - `panels/`: Side panels for nodes and settings
+- `src/hooks`: Custom hooks for state and validation
+- `src/lib`: Utility functions and validation logic
+- `src/types`: TypeScript type definitions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Development
+To add a new node type:
+1. Create a new component in `src/components/flow-builder/nodes/`
+2. Add the node type to `node-types.ts`
+3. Register it in the nodes panel
 
-## Learn More
+## Deployment
+The easiest way to deploy is via [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
