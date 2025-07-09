@@ -1,60 +1,72 @@
-import React, { useState, useCallback } from 'react';
-import { v4 as uuid } from 'uuid';
+import React, { useState } from 'react';
+import { v4 as uuid } from "uuid";
 import { Handle, Position, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { MessageSquare, Plus, Grip, AlertCircle } from 'lucide-react';
-import { FlowNode, MessageNodeData } from '@/types/flow';
+import { MessageSquare, Grip, AlertCircle, Plus } from 'lucide-react';
+import { MessageNodeData } from '@/types/flow';
+import { findNonOverlappingPosition, HORIZONTAL_GAP } from '@/components/flow-builder/toolbar';
 
-
-// Custom Message Node Component
 export const MessageNode = (
     { data, selected, id }: { data: MessageNodeData; selected: boolean; id: string }
 ) => {
-    const [isHovered, setIsHovered] = useState(false);
+    const [hover, setHover] = useState<boolean>(false);
     const { setNodes, setEdges, getNodes } = useReactFlow();
+    const isEmpty = !data.text?.trim();
 
-    const handleAddNode = useCallback((e: React.MouseEvent) => {
+    const addNewNode = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const newNodeId = `node-${uuid()}`; // Generate a unique ID for the new node
-        const currentNodes = getNodes();
-        const currentNode = currentNodes.find(n => n.id === id);
 
-        if (currentNode) {
-            const newNode: FlowNode = {
-                id: newNodeId,
-                type: 'messageNode',
-                position: {
-                    x: currentNode.position.x + 300,
-                    y: currentNode.position.y
-                },
-                data: { label: 'Send Message', text: '' }
-            };
+        const currentNode = getNodes().find(n => n.id === id);
+        if (!currentNode) return;
 
-            setNodes(nodes => [...nodes, newNode]);
-            setEdges(edges => [...edges, {
-                id: `edge-${id}-${newNodeId}`,
-                source: id,
-                target: newNodeId,
-                type: 'smoothstep',
-                animated: true
-            }]);
-        }
-    }, [id, setNodes, setEdges, getNodes]);
+        const allNodes = getNodes();
+        const baseX = currentNode.position.x + HORIZONTAL_GAP;
+        const baseY = currentNode.position.y;
 
-    const isEmpty = !data.text.trim();
+        const position = findNonOverlappingPosition(baseX, baseY, allNodes);
+
+        const newNode = {
+            id: `node-${uuid()}`,
+            type: 'messageNode',
+            position,
+            data: { label: 'Send Message', text: '' },
+        };
+
+        const newEdge = {
+            id: `edge-${uuid()}`,
+            source: id,
+            target: newNode.id,
+        };
+
+        setNodes(nds => [...nds, newNode]);
+        setEdges(eds => [...eds, newEdge]);
+    };
+
 
     return (
         <div
-            className={`relative bg-white rounded-lg border-2 transition-all duration-200 ${selected ? 'border-blue-500 shadow-lg' : 'border-gray-200 hover:border-gray-300'
+            className={`relative bg-white rounded-lg border-2 transition-all duration-200 z-10 ${selected
+                ? 'border-blue-500 shadow-lg'
+                : 'border-gray-200 hover:border-gray-300'
                 } ${isEmpty ? 'border-red-200 bg-red-50' : ''}`}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
         >
-            {/* Target Handle */}
+
+            {/* Invisible hover area that extends beyond the node */}
+            <div className="absolute -inset-5 z-0" />
+            {/* Input Handle */}
             <Handle
                 type="target"
-                position={Position.Top}
-                className="w-4 h-4 !bg-blue-500 !border-2 !border-white shadow-md"
+                position={Position.Left}
+                className="w-3 h-3 bg-gray-400 border-2 border-white hover:bg-gray-600 transition-colors"
+            />
+
+            {/* Output Handle */}
+            <Handle
+                type="source"
+                position={Position.Right}
+                className="w-3 h-3 bg-gray-400 border-2 border-white hover:bg-gray-600 transition-colors"
             />
 
             {/* Node Header */}
@@ -65,40 +77,35 @@ export const MessageNode = (
             </div>
 
             {/* Node Content */}
-            <div className="p-4 min-w-[200px]">
+            <div className="p-4 min-w-[200px] max-w-[280px]">
                 <div className="text-sm text-gray-600 break-words">
-                    {data.text || (
+                    {data.text ? (
+                        <div className="whitespace-pre-wrap">
+                            {data.text}
+                        </div>
+                    ) : (
                         <span className="text-red-400 italic">Enter message text</span>
                     )}
                 </div>
             </div>
 
-            {/* Source Handle */}
-            <Handle
-                type="source"
-                position={Position.Bottom}
-                className="w-4 h-4 !bg-blue-500 !border-2 !border-white shadow-md"
-            />
-
-            {/* Add Node Button Container */}
-            <div
-                className={`absolute -right-12 top-1/2 transform -translate-y-1/2 w-12 h-12 flex items-center justify-center transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                <button
-                    onClick={handleAddNode}
-                    className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                >
-                    <Plus size={14} />
-                </button>
-            </div>
-
             {/* Empty State Indicator */}
             {isEmpty && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                    <AlertCircle size={10} className="text-white" />
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center z-10">
+                    <AlertCircle size={12} className="text-white" />
+                </div>
+            )}
+
+            {/* Add Node Button */}
+            {hover && (
+                <div className="absolute -right-7 top-1/2 transform -translate-y-1/2 z-20">
+                    <button
+                        onClick={addNewNode}
+                        className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg"
+                        title="Add new message node"
+                    >
+                        <Plus size={14} />
+                    </button>
                 </div>
             )}
         </div>

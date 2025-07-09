@@ -1,13 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { v4 as uuid } from "uuid";
+import { Node } from "reactflow";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, X } from "lucide-react";
 
-
 export const NodesPanel = (
-    { isOpen, onClose }: { isOpen: boolean; onClose: () => void }
+    { isOpen, onClose, setNodes }: { 
+        isOpen: boolean; 
+        onClose: () => void; 
+        setNodes: (nodes: any) => void; 
+    }
 ) => {
     const onDragStart = (event: React.DragEvent, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
+    };
+
+    const addTextNode = () => {
+        setNodes((nds: Node[]) => [
+            ...nds,
+            {
+                id: `node-${uuid()}`,
+                type: "messageNode",
+                data: { label: 'Send Message', text: '' },
+                position: { x: 250, y: 50 + nds.length * 100 },
+            },
+        ]);
     };
 
     if (!isOpen) return null;
@@ -31,6 +49,7 @@ export const NodesPanel = (
                             className="p-4 bg-teal-50 border border-teal-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-teal-100 transition-colors"
                             draggable
                             onDragStart={(event) => onDragStart(event, 'messageNode')}
+                            onClick={addTextNode}
                         >
                             <div className="flex items-center gap-2 text-teal-700">
                                 <MessageSquare size={16} />

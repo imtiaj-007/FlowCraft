@@ -10,7 +10,7 @@ import { FlowNode, MessageNodeData } from "@/types/flow";
 import { nodeTypes } from "./nodes/node-types";
 import { NodesPanel } from "./panels/nodes-panel";
 import { SettingsPanel } from "./panels/settings-panel";
-
+import { toast } from "sonner";
 
 export const FlowBuilderCanvas: React.FC = (): ReactElement => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -19,23 +19,12 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
     const [showNodesPanel, setShowNodesPanel] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
 
-    const { screenToFlowPosition } = useReactFlow();
+    const { screenToFlowPosition, fitView } = useReactFlow();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-    const onConnect = useCallback((params: Connection | Edge) => {
-        // Check if source already has an edge
-        const sourceHasEdge = edges.some(edge => edge.source === params.source);
-        if (sourceHasEdge) {
-            return; // Don't allow multiple edges from same source
-        }
-
-        const newEdge = {
-            ...params,
-            type: 'smoothstep',
-            animated: true,
-        };
-        setEdges((eds) => addEdge(newEdge, eds));
-    }, [edges, setEdges]);
+    const onConnect = useCallback(
+        (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
+        [setEdges]);
 
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
@@ -62,8 +51,13 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
             };
 
             setNodes((nds) => nds.concat(newNode));
+            
+            // Fit view after adding node with a slight delay
+            setTimeout(() => {
+                fitView({ duration: 300, padding: 0.2 });
+            }, 100);
         },
-        [screenToFlowPosition, setNodes]
+        [screenToFlowPosition, setNodes, fitView]
     );
 
     const onNodeClick = useCallback((event: React.MouseEvent, node: unknown) => {
@@ -82,7 +76,40 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
         );
     }, [setNodes]);
 
+    // const addNodeFromButton = useCallback((sourceNodeId: string) => {
+    //     const sourceNode = nodes.find(n => n.id === sourceNodeId);
+    //     if (!sourceNode) return;
+
+    //     const newNode: FlowNode = {
+    //         id: `node-${uuid()}`,
+    //         type: 'messageNode',
+    //         position: {
+    //             x: sourceNode.position.x + 300,
+    //             y: sourceNode.position.y,
+    //         },
+    //         data: { label: 'Send Message', text: '' },
+    //     };
+
+    //     const newEdge: Edge = {
+    //         id: `edge-${uuid()}`,
+    //         source: sourceNodeId,
+    //         target: newNode.id,
+    //         animated: true,
+    //     };
+
+    //     setNodes((nds) => [...nds, newNode]);
+    //     setEdges((eds) => [...eds, newEdge]);
+    // }, [nodes, setNodes, setEdges]);
+
     const validateFlow = useCallback(() => {
+        if (nodes.length === 0) return null;
+
+        // Check for empty text nodes
+        const emptyTextNodes = nodes.filter(node => !node.data.text?.trim());
+        if (emptyTextNodes.length > 0) {
+            return 'All message nodes must have text content';
+        }
+
         if (nodes.length <= 1) return null;
 
         const nodesWithEmptyTargets = nodes.filter(node => {
@@ -91,7 +118,7 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
         });
 
         if (nodesWithEmptyTargets.length > 1) {
-            return 'Cannot save flow: More than one node has empty target handles';
+            return 'More than one node has empty target handles';
         }
 
         return null;
@@ -101,19 +128,19 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
         const error = validateFlow();
         if (error) {
             setSaveError(error);
-            setTimeout(() => setSaveError(null), 5000);
+            toast.error("Cannot save flow:", {
+                description: error,
+                icon: <AlertCircle size={16} />,
+                duration: Infinity,                
+                closeButton: true,
+            });
             return;
         }
 
         setSaveError(null);
-        console.log('Flow saved successfully!', { nodes, edges });
-        // Here you would typically send the flow to your backend
-    }, [validateFlow, nodes, edges]);
-
-    const onNodeDoubleClick = useCallback((e: React.MouseEvent, node: unknown) => {
-        e.stopPropagation();
-        setSelectedNode(node as FlowNode);
-    }, []);
+        toast.success("Flow saved successfully!");
+        // Here we would typically send the flow to our backend
+    }, [validateFlow]);
 
     return (
         <div className="w-full h-screen bg-gray-50 relative">
@@ -156,23 +183,21 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
                     onDrop={onDrop}
                     onDragOver={onDragOver}
                     onNodeClick={onNodeClick}
-                    onNodeDoubleClick={onNodeDoubleClick}
                     onPaneClick={onPaneClick}
                     nodeTypes={nodeTypes}
                     fitView
+                    nodeOrigin={[0.5, 0.5]}
                 >
                     <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
                     <Controls />
-                    <MiniMap
-                        nodeColor={'#14b8a6'}
-                        maskColor="rgba(0,0,0,0.1)"
-                    />
+                    <MiniMap nodeColor={'#14b8a6'} />
                 </ReactFlow>
             </div>
 
             {/* Panels */}
             <NodesPanel
                 isOpen={showNodesPanel}
+                setNodes={setNodes}
                 onClose={() => setShowNodesPanel(false)}
             />
 
