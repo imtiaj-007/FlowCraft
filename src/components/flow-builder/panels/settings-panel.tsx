@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft } from "lucide-react";
 import { FlowNode, MessageNodeData } from "@/types/flow";
+import { ArrowLeft } from "lucide-react";
 
 
-export const SettingsPanel = ({
-    selectedNode,
-    onUpdateNode,
-    onClose
-}: {
-    selectedNode: FlowNode | null;
-    onUpdateNode: (id: string, data: Partial<MessageNodeData>) => void;
-    onClose: () => void;
-}) => {
+export const SettingsPanel = (
+    { selectedNode, onUpdateNode, onBack }: {
+        selectedNode: FlowNode | null;
+        onUpdateNode: (id: string, data: Partial<MessageNodeData>) => void;
+        onBack: () => void;
+    }) => {
     const [text, setText] = useState('');
 
     useEffect(() => {
@@ -31,22 +28,19 @@ export const SettingsPanel = ({
     if (!selectedNode) return null;
 
     return (
-        <div className="fixed right-0 top-0 w-80 h-full bg-white border-l border-gray-200 shadow-lg z-50 flex flex-col">
-            <div className="p-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" onClick={onClose}>
-                            <ArrowLeft size={16} />
-                        </Button>
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-900">Message</h2>
-                            <p className="text-sm text-gray-500">Edit message content</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="space-y-2 p-2">
+            <Button
+                variant="ghost"
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 text-sm"
+                onClick={onBack}
+            >
+                <ArrowLeft size={16} />
+                Go Back
+            </Button>
+            <h2 className="text-lg font-semibold text-gray-900">Message</h2>
+            <p className="text-sm text-gray-500">Edit message content</p>
 
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-2">
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
