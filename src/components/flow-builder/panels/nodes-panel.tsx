@@ -1,64 +1,65 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { v4 as uuid } from "uuid";
-import { Node } from "reactflow";
-import { Button } from "@/components/ui/button";
-import { MessageSquare, X } from "lucide-react";
+import { File, HelpCircle, MessageSquare } from "lucide-react";
+import { createNode } from "@/lib/flow-helpers";
+import { useFlowStore } from "@/store/flowStore";
+import { FlowNode } from "@/types/flow";
 
-export const NodesPanel = (
-    { isOpen, onClose, setNodes }: { 
-        isOpen: boolean; 
-        onClose: () => void; 
-        setNodes: (nodes: any) => void; 
-    }
-) => {
+
+export const NodesPanel: React.FC = () => {
+    const { nodes, setNodes } = useFlowStore();
+
     const onDragStart = (event: React.DragEvent, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.effectAllowed = 'move';
     };
 
-    const addTextNode = () => {
-        setNodes((nds: Node[]) => [
-            ...nds,
-            {
-                id: `node-${uuid()}`,
-                type: "messageNode",
-                data: { label: 'Send Message', text: '' },
-                position: { x: 250, y: 50 + nds.length * 100 },
-            },
-        ]);
+    const addTextNode = (event: React.MouseEvent) => {
+        event.preventDefault();
+
+        const type = event.currentTarget.getAttribute('data-node-type') || 'messageNode';
+        const newNode: FlowNode = createNode(type, { x: 0, y: 0 }, { label: 'Send Message', text: '' });
+        setNodes([...nodes, newNode]);       
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed left-0 top-0 w-80 h-full bg-white border-r border-gray-200 shadow-lg z-50 flex flex-col">
-            <div className="p-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-900">Nodes Panel</h2>
-                    <Button variant="ghost" size="sm" onClick={onClose}>
-                        <X size={16} />
-                    </Button>
+        <div className="space-y-4 p-2">
+            <div
+                className="p-4 bg-teal-50 border border-teal-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-teal-100 transition-colors"
+                draggable
+                onDragStart={(event) => onDragStart(event, 'messageNode')}
+                data-node-type="messageNode"
+                onClick={addTextNode}
+            >
+                <div className="flex items-center gap-2 text-teal-700">
+                    <MessageSquare size={16} />
+                    <span className="font-medium">Message</span>
                 </div>
+                <p className="text-xs text-teal-600 mt-1">Send a text message</p>
             </div>
 
-            <div className="flex-1 p-4">
-                <div className="space-y-4">
-                    <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Messages</h3>
-                        <div
-                            className="p-4 bg-teal-50 border border-teal-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-teal-100 transition-colors"
-                            draggable
-                            onDragStart={(event) => onDragStart(event, 'messageNode')}
-                            onClick={addTextNode}
-                        >
-                            <div className="flex items-center gap-2 text-teal-700">
-                                <MessageSquare size={16} />
-                                <span className="font-medium">Message</span>
-                            </div>
-                            <p className="text-xs text-teal-600 mt-1">Send a text message</p>
-                        </div>
-                    </div>
+            <div
+                className="p-4 bg-blue-50 border border-blue-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-blue-100 transition-colors"
+                draggable
+                onDragStart={(event) => onDragStart(event, 'fileNode')}
+                data-node-type="fileNode"
+            >
+                <div className="flex items-center gap-2 text-blue-700">
+                    <File size={16} />
+                    <span className="font-medium">File Upload</span>
                 </div>
+                <p className="text-xs text-blue-600 mt-1">Allow users to upload files</p>
+            </div>
+
+            <div
+                className="p-4 bg-purple-50 border border-purple-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-purple-100 transition-colors"
+                draggable
+                onDragStart={(event) => onDragStart(event, 'questionNode')}
+                data-node-type="questionNode"
+            >
+                <div className="flex items-center gap-2 text-purple-700">
+                    <HelpCircle size={16} />
+                    <span className="font-medium">Question</span>
+                </div>
+                <p className="text-xs text-purple-600 mt-1">Ask a question to the user</p>
             </div>
         </div>
     );
