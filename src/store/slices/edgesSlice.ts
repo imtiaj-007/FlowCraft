@@ -18,7 +18,6 @@ export const useEdgesStore = create<EdgesSlice>((set, get) => ({
     onEdgesChange: (changes) => {
         const currentEdges = get().edges;
         if (!Array.isArray(currentEdges)) {
-            console.error('Edges is not an array:', currentEdges);
             set({ edges: [] });
             return;
         }
