@@ -1,3 +1,5 @@
+'use client' // Required for Next.js client-side hooks and state
+
 import FlowBuilder from "@/components/flow-builder/flow-builder";
 import { ErrorBoundary } from "react-error-boundary";
 import { AlertCircle } from "lucide-react";

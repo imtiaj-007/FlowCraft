@@ -1,5 +1,3 @@
-'use client' // Required for Next.js client-side hooks and state
-
 import { ReactElement, Suspense } from "react";
 import { ReactFlowProvider } from "reactflow";
 import { ErrorBoundary } from "react-error-boundary";
