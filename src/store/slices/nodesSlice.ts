@@ -20,7 +20,6 @@ export const useNodesStore = create<NodesSlice>((set, get) => ({
     onNodesChange: (changes) => {
         const currentNodes = get().nodes;
         if (!Array.isArray(currentNodes)) {
-            console.error('Nodes is not an array:', currentNodes);
             set({ nodes: [] });
             return;
         }
