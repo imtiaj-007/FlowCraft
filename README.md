@@ -8,7 +8,7 @@ A modern drag-and-drop chatbot flow builder built with:
 - Lucide icons
 - React Flow
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://flow-craft-dun.vercel.app/)
+🔗 [Live Demo](https://flow-craft-dun.vercel.app/) • 🚀 [Deployed on Vercel](https://flow-craft-dun.vercel.app/)
 
 
 ## Key Features
