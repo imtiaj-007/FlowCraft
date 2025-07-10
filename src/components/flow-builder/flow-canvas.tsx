@@ -93,10 +93,9 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
     const handleSave = useCallback(() => {
         const error = validateFlow();
         if (error) {
-            toast.error("Cannot save flow:", {
+            toast.error("Cannot save flow:", {                
                 description: error,
-                duration: Infinity,
-                closeButton: true,
+                duration: 7000,         
             });
             return;
         }

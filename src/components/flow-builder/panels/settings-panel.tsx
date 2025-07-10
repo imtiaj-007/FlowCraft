@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FlowNode, MessageNodeData } from "@/types/flow";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 
 
 export const SettingsPanel = (
@@ -25,7 +25,15 @@ export const SettingsPanel = (
         }
     };
 
-    if (!selectedNode) return null;
+    if (!selectedNode) return (
+        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+            <MessageSquare className="w-12 h-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-500 mb-2">No node selected</h3>
+            <p className="text-sm text-gray-400 max-w-xs">
+                Select a node from the canvas to view and edit its settings
+            </p>
+        </div>
+    );
 
     return (
         <div className="space-y-2 p-2">
@@ -55,7 +63,7 @@ export const SettingsPanel = (
                     </div>
 
                     <Button onClick={handleSave} className="w-full">
-                        Save Changes
+                        Apply Text
                     </Button>
                 </div>
             </div>

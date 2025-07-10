@@ -38,10 +38,15 @@ export const findNonOverlappingPosition = (
 ) => {
     const x = baseX, y = baseY;
     let yOffset = 0;
+    let direction = 1; // Start with downward direction
+    let iteration = 0;
 
-    // Try downward positions until no overlap
     while (isOverlapping(x, y + yOffset, existingNodes)) {
-        yOffset += VERTICAL_GAP;
+        iteration++;
+        // Alternate direction based on iteration count
+        // Odd iterations go down, even go up
+        direction = iteration % 2 === 1 ? 1 : -1;
+        yOffset = Math.ceil(iteration / 2) * VERTICAL_GAP * direction;
     }
 
     return { x, y: y + yOffset };
