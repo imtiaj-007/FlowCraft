@@ -109,12 +109,12 @@ export const MessageNode = (
                         {data.text}
                     </div>
                 ) : (
-                    <span 
-                        className="text-red-500 italic"
+                    <div 
+                        className="text-xs text-red-500 italic"
                         aria-label="Empty message content warning"
                     >
                         Enter message text
-                    </span>
+                    </div>
                 )}
             </div>
 
@@ -130,7 +130,7 @@ export const MessageNode = (
                                 <AlertCircle size={12} className="text-white" />
                             </div>
                         </TooltipTrigger>
-                        <TooltipContent side="top" align="center" className="text-xs bg-red-500 text-white">
+                        <TooltipContent side="top" align="center" className="text-xs bg-red-500 fill-red-500 text-white">
                             Message content cannot be empty
                         </TooltipContent>
                     </Tooltip>

@@ -90,6 +90,12 @@ export const NodesPanel: React.FC = (): ReactElement => {
             role="region" 
             aria-label="Node selection panel"
         >
+            <div className="mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">Add Nodes</h2>
+                <p className="text-xs text-gray-500">
+                    Click or drag to add nodes to the canvas
+                </p>
+            </div>
             {NODE_TEMPLATES.map((template) => (
                 <div
                     key={template.type}

@@ -94,8 +94,9 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
 
         // Check for empty content
         const emptyNodes = safeNodes.filter(node => !node.data.text?.trim());
-        if (emptyNodes.length > 0) {
-            return `${emptyNodes.length} nodes have empty content`;
+        const emptyLength = emptyNodes.length;
+        if (emptyLength > 0) {
+            return `${emptyLength} ${emptyLength == 1 ? 'node is' : `nodes are`} empty`;
         }
 
         // Check connectivity (if multiple nodes exist)
@@ -104,7 +105,7 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
                 !safeEdges.some(edge => edge.target === node.id)
             );
             if (disconnectedNodes.length > 1) {
-                return `${disconnectedNodes.length} nodes are disconnected`;
+                return 'Some nodes are not connected';
             }
         }
 
@@ -119,21 +120,12 @@ export const FlowBuilderCanvas: React.FC = (): ReactElement => {
         if (error) {
             toast.error("Validation failed", { 
                 description: error,
-                action: {
-                    label: "View Issues",
-                    onClick: () => {
-                        setActiveTab('settings');
-                        setSelectedNode(
-                            safeNodes.find(n => !n.data.text?.trim()) || null
-                        );
-                    }
-                }
             });
             return;
         }
         toast.success("Flow saved successfully");
         // TODO: Implement API logic to save the flow
-    }, [validateFlow, safeNodes, setSelectedNode]);
+    }, [validateFlow]);
 
     // Panel management
     const handleTabChange = useCallback((value: string) => {

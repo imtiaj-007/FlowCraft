@@ -114,8 +114,8 @@ export const SettingsPanel = ({
                     <h2 className="text-lg font-semibold text-gray-900">
                         Message Node
                     </h2>
-                    <p className="text-sm text-gray-500">
-                        ID: {selectedNode.id}
+                    <p className="text-xs text-gray-500">
+                        {selectedNode.id}
                     </p>
                 </div>
 
