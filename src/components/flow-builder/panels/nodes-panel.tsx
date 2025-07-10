@@ -1,4 +1,4 @@
-import { File, HelpCircle, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { createNode } from "@/lib/flow-helpers";
 import { useFlowStore } from "@/store/flowStore";
 import { FlowNode } from "@/types/flow";
@@ -17,7 +17,7 @@ export const NodesPanel: React.FC = () => {
 
         const type = event.currentTarget.getAttribute('data-node-type') || 'messageNode';
         const newNode: FlowNode = createNode(type, { x: 0, y: 0 }, { label: 'Send Message', text: '' });
-        setNodes([...nodes, newNode]);       
+        setNodes([...nodes, newNode]);
     };
 
     return (
@@ -36,7 +36,7 @@ export const NodesPanel: React.FC = () => {
                 <p className="text-xs text-teal-600 mt-1">Send a text message</p>
             </div>
 
-            <div
+            {/* <div
                 className="p-4 bg-blue-50 border border-blue-200 rounded-lg cursor-grab active:cursor-grabbing hover:bg-blue-100 transition-colors"
                 draggable
                 onDragStart={(event) => onDragStart(event, 'fileNode')}
@@ -60,6 +60,13 @@ export const NodesPanel: React.FC = () => {
                     <span className="font-medium">Question</span>
                 </div>
                 <p className="text-xs text-purple-600 mt-1">Ask a question to the user</p>
+            </div> */}
+
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-center">
+                <p className="text-xs text-gray-500">
+                    <span className="font-medium text-gray-600">Extensible Panel</span> -
+                    Designed to support any number of new node types
+                </p>
             </div>
         </div>
     );

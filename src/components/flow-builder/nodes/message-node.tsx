@@ -4,6 +4,7 @@ import 'reactflow/dist/style.css';
 import { useFlowStore } from '@/store/flowStore';
 import { MessageSquare, Grip, AlertCircle, Plus } from 'lucide-react';
 import { MessageNodeData } from '@/types/flow';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 export const MessageNode = (
@@ -34,19 +35,34 @@ export const MessageNode = (
             {/* Invisible hover area that extends beyond the node */}
             <div className="absolute -inset-5 z-0" />
             {/* Input Handle */}
-            <Handle
-                type="target"
-                position={Position.Left}
-                style={{ width: '8px', height: '8px', backgroundColor: '#4A90E2' }}
-                isConnectableEnd
-            />
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Handle
+                            type="target"
+                            position={Position.Left}
+                            style={{ width: '10px', height: '10px', left: -6, backgroundColor: '#FFA500' }}
+                            isConnectableEnd
+                        />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center" className="text-xs">
+                        Source Handle
+                    </TooltipContent>
+                </Tooltip>
 
-            {/* Output Handle */}
-            <Handle
-                type="source"
-                position={Position.Right}
-                style={{ width: '8px', height: '8px', backgroundColor: '#4A90E2' }}
-            />
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Handle
+                            type="source"
+                            position={Position.Right}
+                            style={{ width: '10px', height: '10px', right: -6, backgroundColor: '#3b82f6' }}
+                        />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center" className="text-xs">
+                        Target Handle
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
 
             {/* Node Header */}
             <div className="flex items-center gap-2 p-2 bg-teal-500 text-white rounded-t-md">
@@ -63,16 +79,25 @@ export const MessageNode = (
                             {data.text}
                         </div>
                     ) : (
-                        <span className="text-red-400 italic">Enter message text</span>
+                        <span className="text-red-500 italic">Enter message text</span>
                     )}
                 </div>
             </div>
 
             {/* Empty State Indicator */}
             {isEmpty && (
-                <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center z-10">
-                    <AlertCircle size={12} className="text-white" />
-                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center z-10">
+                                <AlertCircle size={12} className="text-white" />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" align="center" className="text-xs bg-red-500 fill-red-500 text-white">
+                            Message text content is empty
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             )}
 
             {/* Add Node Button */}
